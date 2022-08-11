@@ -6,18 +6,14 @@ import { useFonts } from 'expo-font';
 // Packages ----------
 import { StatusBar } from 'expo-status-bar';
 import { useState } from "react";
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 
 // Navigation ----------
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Import Screen ----------
-import { WelcomeScreen, SignupScreen, SigninScreen, HomeScreen } from "./src/screens"
-// import { WelcomeScreen } from "./src/screens/WelcomeScreen"
-// import { SignupScreen } from "./src/screens/SignupScreen"
-// import { SigninScreen } from "./src/screens/SigninScreen"
-// import { HomeScreen } from "./src/screens/HomeScreen"
+import { WelcomeScreen, SignupScreen, SigninScreen, HomeScreen, DetailScreen } from "./src/screens"
 import { SignoutButton } from './componests/SignoutButton'
 
 // Create stack navigator ----------
@@ -26,7 +22,7 @@ const Stack = createNativeStackNavigator()
 // Firebase config ----------
 import { firebaseConfig } from './config/Config'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc } from "firebase/firestore"
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, query, onSnapshot, orderBy } from "firebase/firestore"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
 
 const FBapp = initializeApp( firebaseConfig ) // initialize Firebase app and store ref in a variable
@@ -37,20 +33,27 @@ const db = getFirestore( FBapp )  // initialize Firestore
 export default function App() {
 
   // // Font loading ----------
-  // let [fontsLoaded] = useFonts({
-  //   'Raleway-SemiBold': require('./assets/fonts/Raleway-SemiBold.ttf'),
-  //   'Raleway-Regular': require('./assets/fonts/Raleway-Regular.ttf'),
+  // let [loaded] = useFonts({
+  //   RalewaySemiBold: require('./assets/fonts/Raleway-SemiBold.ttf'),
+  //   RalewayRegular: require('./assets/fonts/Raleway-Regular.ttf'),
   // });
-  // if (!fontsLoaded) {
-  //   return null;
+  // if (!loaded) {
+  //   return <AppLoading />;
   // }
 
   const [ user, setUser ] = useState()
+
+  // State to stare data
+  const [appData, setAppData] = useState()
 
   const authObj = getAuth()
   onAuthStateChanged( authObj, (user) => {
     if(user) {
       setUser( user )
+      // when auth get data ---------
+      if(!appData) {
+        getData(`list/${user.uid}/items`)
+      }
     }
     else {
       setUser( null )
@@ -70,17 +73,25 @@ export default function App() {
   const signin = ( email, password) => {
     signInWithEmailAndPassword(authObj, email, password )
       .then((userCredential) => setUser(userCredential.user) )
-      .catch((error) => console.log(error) )
+      .catch((error) => {
+        console.log(error)
+        Alert.alert(
+          "The account cannot found.",
+          "Please try again",
+          [
+            { text: "OK", onPress: () => console.log("OK Pressed") }
+          ])
+      })
   }
 
   const signout = () => {
     signOut( authObj )
     .then( () => {
       // sign out successful
-    } )
+    })
     .catch( () => {
       // sign out errors
-    } )
+    })
   }
 
   // Add date into firebase ---------
@@ -88,6 +99,22 @@ export default function App() {
     // add data to a collection with FS generated id
     const ref = await addDoc( collection(db, FScollection), data )
     console.log(ref.id);
+  }
+
+  // Get data to display ----------
+  const getData = ( FScollection ) => {
+    const FSquery = query( collection(db, FScollection) )
+    console.log(FSquery);
+    const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
+      let FSdata = []
+      querySnapshot.forEach((doc) => {
+        let item = {}
+        item = doc.data()
+        item.id = doc.id
+        FSdata.push( item )
+      })
+      setAppData( FSdata )
+    })
   }
 
   return (
@@ -114,11 +141,16 @@ export default function App() {
         </Stack.Screen>
 
         <Stack.Screen name="HomeScreen" options={{
-          headerTitle: "Home",
+          headerTitle: "To Do List",
           headerTitleAlign: "center",
           headerRight: ( props ) => <SignoutButton {...props} signout={signout} />
           }}>
-          { ( props ) => <HomeScreen {...props} add={addData} auth={user} /> }
+          { ( props ) => <HomeScreen {...props} add={addData} auth={user} data={appData} /> }
+        </Stack.Screen>
+        <Stack.Screen name="Detail" options={{
+          headerTitle: "Item Detail"
+        }}>
+          { (props) => <DetailScreen/> }
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,11 +1,19 @@
-import { Text, View, StyleSheet, TextInput, TouchableOpacity} from 'react-native'
-import { useEffect } from 'react';
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, FlatList} from 'react-native'
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { COLORS, FONTS, SIZES } from '../designSet';
 
 export default function HomeScreen( props ) {
 
     // Set navigation ----------
     const navigation = useNavigation()
+
+    // Add New task ---------
+    const [input, setInput] = useState()
+    const submit = (path, data) => {
+        const dataObj = {name: data, date: new Date()}
+        props.add( path, dataObj )
+    }
 
     useEffect(() => {
         if(!props.auth){
@@ -13,13 +21,40 @@ export default function HomeScreen( props ) {
         }
     }, [props.auth])
 
+    // Get data ----------
+    useEffect( () => {
+        console.log( props.data )
+    }, [props.data])
+
+    // Pass data detail screen ----------
+    const clickHandler = (data) => {
+        navigation.navigate('Detail', data )
+    }
+    const renderItem = ({item}) => (    // Render to items 
+        <View>
+            <Text style={styles.taskListText} onPress={ () => clickHandler(item) }>
+                { item.name }
+            </Text>
+        </View> 
+    )
     return (
         <View style={styles.homeView}>
-            <Text>Add items</Text>
-                <TextInput style={styles.input}/>
-            <TouchableOpacity style={styles.button}>
-                <Text>Add</Text>
-            </TouchableOpacity>
+            <View style={styles.inputBlock}>
+                <TextInput style={styles.input} onChangeText={(val) => setInput(val)} placeholder=" Create a new task!"/>
+                <TouchableOpacity 
+                    style={styles.button}
+                    onPress={() => {
+                        submit(`list/${props.auth.uid}/items`, input)
+                    }}
+                >
+                    <Text style={styles.buttonText}>+</Text>
+                </TouchableOpacity>
+            </View>
+            <FlatList 
+                data={ props.data } 
+                renderItem= {renderItem}
+                keyExtractor={ item => item.id }
+            />
         </View>
     );
 }
@@ -27,14 +62,38 @@ export default function HomeScreen( props ) {
 const styles = StyleSheet.create( {
     homeView: {
         flex: 1,
+        margin: SIZES.padding,
+    },
+    inputBlock: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: SIZES.padding,
     },
     input: {
-        backgroundColor: "red",
+        borderColor: COLORS.orange,
+        borderWidth: 2,
+        borderRadius: 100,
         fontSize: 20,
         padding: 10,
+        width: '84%',
     },
     button: {
-        backgroundColor: "lightblue",
-        fontSize: 50,
-    }
+        width: 50,
+        borderColor: COLORS.orange,
+        borderWidth: 2,
+        borderRadius: 100,
+    },
+    buttonText: {
+        color: COLORS.orange,
+        fontSize: 30,
+        paddingLeft: 14.5,
+        paddingTop: 2.5,
+    },
+    taskListText: {
+        ...FONTS.p2,
+        padding: SIZES.padding,
+        width: '100%',
+        borderBottomColor: COLORS.orange,
+        borderBottomWidth: 1,
+    },
 });

@@ -19,9 +19,12 @@ const SIZES = {
 }
 
 const FONTS = {
-    h1: {fontSize: SIZES.h1, fontFamily: "Raleway-SemiBold"},
-    p1: {fontSize: SIZES.p, fontFamily: "Raleway-SemiBold"},
-    p2: {fontSize: SIZES.p, fontFamily: "Raleway-Regular"},
+    // h1: {fontSize: SIZES.h1, fontFamily: 'RalewaySemiBold'},
+    // p1: {fontSize: SIZES.p, fontFamily: 'RalewaySemiBold'},
+    // p2: {fontSize: SIZES.p, fontFamily: 'RalewayRegular'},
+    h1: {fontSize: SIZES.h1},
+    p1: {fontSize: SIZES.p},
+    p2: {fontSize: SIZES.p},
 }
 
 const SHADOW = {
