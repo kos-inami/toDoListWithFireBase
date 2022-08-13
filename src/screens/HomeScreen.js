@@ -3,15 +3,19 @@ import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, FONTS, SIZES } from '../designSet';
 
+// Import FontAwesome Component
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 export default function HomeScreen( props ) {
 
     // Set navigation ----------
     const navigation = useNavigation()
 
     // Add New task ---------
-    const [input, setInput] = useState()
+    const [input, setInput] = useState("")
     const submit = (path, data) => {
         const dataObj = {name: data, date: new Date()}
+        setInput("")
         props.add( path, dataObj )
     }
 
@@ -35,12 +39,13 @@ export default function HomeScreen( props ) {
             <Text style={styles.taskListText} onPress={ () => clickHandler(item) }>
                 { item.name }
             </Text>
+            <FontAwesome name="angle-right" style={styles.listArrow}/>
         </View> 
     )
     return (
         <View style={styles.homeView}>
             <View style={styles.inputBlock}>
-                <TextInput style={styles.input} onChangeText={(val) => setInput(val)} placeholder=" Create a new task!"/>
+                <TextInput style={styles.input} onChangeText={(val) => setInput(val)} placeholder="Create a new task!"/>
                 <TouchableOpacity 
                     style={styles.button}
                     onPress={() => {
@@ -61,33 +66,49 @@ export default function HomeScreen( props ) {
 
 const styles = StyleSheet.create( {
     homeView: {
+        backgroundColor: COLORS.white,
         flex: 1,
-        margin: SIZES.padding,
+        padding: SIZES.padding,
+        width: '100%',
+        paddingBottom: 100,
     },
     inputBlock: {
+        position: 'absolute',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: SIZES.padding,
+        justifyContent: 'center',
+        alignItems: 'center',
+        left: 15,
+        right: 0,
+        bottom: 20,
+        width: '100%',
     },
     input: {
+        ...FONTS.p2,
+        backgroundColor: COLORS.white,
         borderColor: COLORS.orange,
         borderWidth: 2,
         borderRadius: 100,
-        fontSize: 20,
         padding: 10,
-        width: '84%',
+        marginRight: 10,
+        paddingLeft: SIZES.padding,
+        width: '80%',
+        zIndex: 3, // works on ios
+        elevation: 3, // works on android
     },
     button: {
-        width: 50,
+        backgroundColor: COLORS.white,
+        width: 46,
         borderColor: COLORS.orange,
         borderWidth: 2,
         borderRadius: 100,
+        zIndex: 3, // works on ios
+        elevation: 3, // works on android
     },
     buttonText: {
         color: COLORS.orange,
         fontSize: 30,
-        paddingLeft: 14.5,
-        paddingTop: 2.5,
+        paddingLeft: 12,
+        paddingTop: 0,
     },
     taskListText: {
         ...FONTS.p2,
@@ -95,5 +116,12 @@ const styles = StyleSheet.create( {
         width: '100%',
         borderBottomColor: COLORS.orange,
         borderBottomWidth: 1,
+    },
+    listArrow: {
+        position: 'absolute',
+        right: SIZES.padding,
+        top: 20,
+        fontSize: 20,
+        color: COLORS.orange,
     },
 });

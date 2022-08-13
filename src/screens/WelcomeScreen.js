@@ -12,7 +12,7 @@ export default function WelcomeScreen() {
     return (
         <View style={styles.container}>
             <View>
-                <Text style={styles.h1}>TO DO LIST</Text>
+                <Text style={styles.h1}>MY LIST MATE</Text>
             </View>
             <TouchableOpacity onPress={ () => navigation.navigate("SignupScreen") }>
                 <Text style={[styles.button, styles.buttonSingup]}>Sign up</Text>

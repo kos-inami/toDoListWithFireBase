@@ -22,8 +22,8 @@ const FONTS = {
     // h1: {fontSize: SIZES.h1, fontFamily: 'RalewaySemiBold'},
     // p1: {fontSize: SIZES.p, fontFamily: 'RalewaySemiBold'},
     // p2: {fontSize: SIZES.p, fontFamily: 'RalewayRegular'},
-    h1: {fontSize: SIZES.h1},
-    p1: {fontSize: SIZES.p},
+    h1: {fontSize: SIZES.h1, fontWeight: 'bold'},
+    p1: {fontSize: SIZES.p, fontWeight: 'bold'},
     p2: {fontSize: SIZES.p},
 }
 

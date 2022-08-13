@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator()
 // Firebase config ----------
 import { firebaseConfig } from './config/Config'
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, query, onSnapshot, orderBy } from "firebase/firestore"
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, query, onSnapshot, orderBy, doc } from "firebase/firestore"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
 
 const FBapp = initializeApp( firebaseConfig ) // initialize Firebase app and store ref in a variable
@@ -103,8 +103,7 @@ export default function App() {
 
   // Get data to display ----------
   const getData = ( FScollection ) => {
-    const FSquery = query( collection(db, FScollection) )
-    console.log(FSquery);
+    const FSquery = query( collection(db, FScollection), orderBy("date", "desc") )
     const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
       let FSdata = []
       querySnapshot.forEach((doc) => {
@@ -115,6 +114,12 @@ export default function App() {
       })
       setAppData( FSdata )
     })
+  }
+  
+  // Delete date into firebase ---------
+  const deleteData = async (del) => {
+    console.log("here:" + del)
+    await deleteDoc(doc(db, `list/${user.uid}/items`, del));
   }
 
   return (
@@ -150,7 +155,7 @@ export default function App() {
         <Stack.Screen name="Detail" options={{
           headerTitle: "Item Detail"
         }}>
-          { (props) => <DetailScreen/> }
+          { (props) => <DetailScreen {...props} del={deleteData}/> }
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
