@@ -76,7 +76,7 @@ export default function SignupScreen( props ) {
                     <TouchableOpacity 
                         style={ (validEmail && validPassword) ? styles.button : styles.buttonDisabled }
                         disabled={ (validEmail && validPassword) ? false : true }
-                        onPress={ () => { signUp(email,password) }}
+                        onPress={ () => { signUp(email, password) }}
                     >
                         <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>

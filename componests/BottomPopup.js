@@ -1,16 +1,22 @@
 import React from "react";
-import { Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, FlatList } from "react-native";
+import { Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity } from "react-native";
+import { useEffect, useState } from 'react';
 
 import { COLORS, FONTS, SIZES } from '../src/designSet';
 
+
+
 const deviceHight = Dimensions.get("window").height
+
+
 
 export class BottomPopup extends React.Component {
 
     constructor( props ) {
         super( props )
         this.state = {
-            show: false
+            show: false,
+            inputName: "",
         }
     }
 
@@ -42,40 +48,38 @@ export class BottomPopup extends React.Component {
         )
     }
 
+    handleName = (text) => {
+        this.setState({ inputName: text })
+    }
+
+    save = (saveValue) => {
+        if (this.state.inputName.length == 0) {
+            this.setState({show: false})
+        } else {
+            this.setState({inputName: saveValue})
+            this.props.save(saveValue)
+            console.log("saved: " + saveValue);
+        }
+    }
+
     renderContent = () => {
         const {data} = this.props
         return(
-            <View>
-                <FlatList 
-                    showsVerticalScrollIndicator={false}
-                    data={data}
-                    renderItem={this.renderItem}
-                    extraData={data}
-                    keyExtractor={(item, index) => index.toString()}
-                    ItemSeparatorComponent={this.renderSeparator}
-                    contentContainerStyle={{
-                        paddingBottom: 40,
-                    }}
+            <View style={styles.popupViewBlockText}>
+                <TextInput 
+                    style={styles.popupInput}
+                    onChangeText={(text) => this.handleName(text)} 
+                    defaultValue={data}
+                    // value={this.state.inputName}
                 />
+                <View>
+                    <TouchableOpacity onPress={() => { this.save(this.state.inputName) }}>
+                        <Text>Save</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
-
-    renderItem = ({item}) => {
-        return(
-            <View>
-                <Text>{item}</Text>
-            </View>
-        )
-    }
-
-    renderSeparator = () => (
-        <View style={{
-            opacity: 0.1,
-            backgroundColor: COLORS.blue,
-            height: 1,
-        }} />
-    )
 
     render() {
         let {show} = this.state
@@ -96,7 +100,7 @@ export class BottomPopup extends React.Component {
                     </View>
                 </View>
             </Modal>
-        )
+        ) 
     }
 
 }
@@ -111,15 +115,23 @@ const styles = StyleSheet.create( {
     popupViewBlock: {
         backgroundColor: COLORS.white,
         width: '100%',
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
         paddingHorizontal: 10,
         maxHeight: deviceHight * 0.4,
     },
     popupViewBlockTitle: {
-
+        ...FONTS.p1,
+        padding: SIZES.padding,
+        paddingBottom: 0,
     },
     popupViewBlockText: {
-
+        padding: SIZES.padding,
+    },
+    popupInput: {
+        width: '100%',
+        padding: SIZES.padding - 10,
+        backgroundColor: COLORS.white,
+        marginBottom: SIZES.padding,
     },
 });

@@ -14,7 +14,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Import Screen ----------
 import { WelcomeScreen, SignupScreen, SigninScreen, HomeScreen, DetailScreen } from "./src/screens"
-import { SignoutButton } from './componests/SignoutButton'
+import { SignoutButton, BottomPopup } from './componests/SignoutButton'
 
 // Create stack navigator ----------
 const Stack = createNativeStackNavigator()
@@ -118,8 +118,17 @@ export default function App() {
   
   // Delete date into firebase ---------
   const deleteData = async (del) => {
-    console.log("here:" + del)
+    console.log("deleted:" + del)
     await deleteDoc(doc(db, `list/${user.uid}/items`, del));
+  }
+
+  // Update name date in firebase ---------
+  const updateData = async (upd, itemId) => {
+    console.log("updated:" + upd + " itemId: " + itemId)
+    const updateDocRef = doc(db, `list/${user.uid}/items`, itemId)
+    await updateDoc(updateDocRef, {
+      "name": upd
+    })
   }
 
   return (
@@ -135,7 +144,7 @@ export default function App() {
           headerTitle: "Sign up",
           headerTitleAlign: "center",
           }}>
-          { ( props) => <SignupScreen {...props} signup={register} auth={user} /> }
+          { ( props ) => <SignupScreen {...props} signup={register} auth={user} /> }
         </Stack.Screen>
 
         <Stack.Screen name="SigninScreen" options={{
@@ -155,7 +164,7 @@ export default function App() {
         <Stack.Screen name="Detail" options={{
           headerTitle: "Item Detail"
         }}>
-          { (props) => <DetailScreen {...props} del={deleteData}/> }
+          { (props ) => <DetailScreen {...props} del={deleteData} update={updateData}/> }
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

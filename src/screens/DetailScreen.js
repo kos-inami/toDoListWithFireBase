@@ -1,23 +1,14 @@
 import React from "react";
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native'
+import {View, Text, StyleSheet, TouchableOpacity, Alert, TextInput} from 'react-native'
 import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, FONTS, SIZES } from '../designSet';
 
 import { useRoute } from '@react-navigation/native'
 
-import { BottomPopup } from '../../componests/BottmPupuup';
+import { BottomPopup } from '../../componests/BottomPopup';
 
-const popupList = [
-    {
-        id: 1,
-        name: 'task1',
-    },
-    {
-        id: 2,
-        name: 'task2',
-    }
-]
+
 
 export default function DetailScreen( props ) {
 
@@ -26,6 +17,8 @@ export default function DetailScreen( props ) {
 
     const route = useRoute()
     const { id, name } = route.params
+
+    const [ nameSet, setNameSet ] = useState(name)
 
     // Get document id and navigate to home screen ----------
     const clickHandler = (del) => {
@@ -47,7 +40,7 @@ export default function DetailScreen( props ) {
     }
     // When press okay through this function
     const clickAlert = (del) => {
-        console.log("OK Pressed")
+        // console.log("OK Pressed")
         props.del( del )
         navigation.navigate('HomeScreen', del )
     }
@@ -62,6 +55,14 @@ export default function DetailScreen( props ) {
         popupRef.close()
     }
 
+    // For update
+    const update = (updateVal) => {
+        // console.log('updating... ' + updateVal + " where " + id )
+        setNameSet(updateVal)
+        props.update( updateVal, id )
+        popupRef.close()
+    }
+
     return (
         <View style={styles.detailView}>
             <View style={styles.table}>
@@ -70,8 +71,8 @@ export default function DetailScreen( props ) {
             </View>
             <TouchableOpacity style={styles.table} onPress={onShowPopup}>
                 <Text style={styles.tableLeft}>Task Name</Text>
-                <Text>{ name }</Text>
-            </TouchableOpacity>                
+                <Text>{ nameSet }</Text>
+            </TouchableOpacity>      
             <TouchableOpacity 
                     style={styles.deleteBtn}
                     onPress={ () => clickHandler(id) }
@@ -79,10 +80,11 @@ export default function DetailScreen( props ) {
                 <Text style={styles.deleteBtnText}>delete</Text>
             </TouchableOpacity>
             <BottomPopup 
-                title = "Name"
+                title = "Task Name"
                 ref={(target) => popupRef = target}
                 onTouchOutside={onClosePopup}
-                data={ name }
+                data={ nameSet }
+                save={update}
             />
         </View>
     )
