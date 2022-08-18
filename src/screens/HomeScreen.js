@@ -45,7 +45,7 @@ export default function HomeScreen( props ) {
     return (
         <View style={styles.homeView}>
             <View style={styles.inputBlock}>
-                <TextInput style={styles.input} onChangeText={(val) => setInput(val)} placeholder="Create a new task!"/>
+                <TextInput style={styles.input} value={input} onChangeText={(val) => setInput(val)} placeholder="Create a new task!"/>
                 <TouchableOpacity 
                     style={styles.button}
                     onPress={() => {
