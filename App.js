@@ -23,10 +23,11 @@ const Stack = createNativeStackNavigator()
 import { firebaseConfig } from './config/Config'
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, query, onSnapshot, orderBy, doc } from "firebase/firestore"
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, getRedirectResult, signInWithRedirect } from 'firebase/auth'
 
 const FBapp = initializeApp( firebaseConfig ) // initialize Firebase app and store ref in a variable
 const db = getFirestore( FBapp )  // initialize Firestore
+// const provider = new GoogleAuthProvider() // initialize Google auth
 
 
 
@@ -59,6 +60,27 @@ export default function App() {
       setUser( null )
     }
   })
+
+  // Google Auth ---------
+  // signInWithRedirect(authObj, provider);
+  // getRedirectResult(authObj)
+  // .then((result) => {
+  //   // This gives you a Google Access Token. You can use it to access Google APIs.
+  //   const credential = GoogleAuthProvider.credentialFromResult(result);
+  //   const token = credential.accessToken;
+
+  //   // The signed-in user info.
+  //   const user = result.user;
+  // }).catch((error) => {
+  //   // Handle Errors here.
+  //   const errorCode = error.code;
+  //   const errorMessage = error.message;
+  //   // The email of the user's account used.
+  //   const email = error.customData.email;
+  //   // The AuthCredential type that was used.
+  //   const credential = GoogleAuthProvider.credentialFromError(error);
+  //   // ...
+  // });
 
   const register = (email, password) => {
     createUserWithEmailAndPassword(authObj, email, password)
