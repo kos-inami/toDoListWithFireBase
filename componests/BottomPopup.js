@@ -1,14 +1,10 @@
 import React from "react";
-import { Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity } from "react-native";
+import { Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
 import { useEffect, useState } from 'react';
 
 import { COLORS, FONTS, SIZES } from '../src/designSet';
 
-
-
 const deviceHight = Dimensions.get("window").height
-
-
 
 export class BottomPopup extends React.Component {
 
@@ -57,7 +53,8 @@ export class BottomPopup extends React.Component {
             this.setState({show: false})
         } else {
             this.setState({inputName: saveValue})
-            this.props.save(saveValue)
+            this.props.save(saveValue)        
+            Keyboard.dismiss()
             console.log("saved: " + saveValue);
         }
     }
@@ -84,7 +81,24 @@ export class BottomPopup extends React.Component {
     render() {
         let {show} = this.state
         const {onTouchOutside, title} = this.props
-
+        if (Platform.OS === 'android') {
+            return(
+                <Modal
+                    animationType={'fade'}
+                    transparent={true}
+                    visible={show}
+                    onRequestClose={this.close}
+                >
+                    <KeyboardAvoidingView style={styles.popupView}>
+                        {this.renderOutsideTouchable(onTouchOutside)}
+                        <View style={styles.popupViewBlock}>
+                            {this.renderTitle()}
+                            {this.renderContent()}
+                        </View>
+                    </KeyboardAvoidingView>
+                </Modal>
+            ) 
+        }
         return(
             <Modal
                 animationType={'fade'}
@@ -92,13 +106,17 @@ export class BottomPopup extends React.Component {
                 visible={show}
                 onRequestClose={this.close}
             >
-                <View style={styles.popupView}>
+                <KeyboardAvoidingView 
+                    keyboardVerticalOffset={deviceHight*0}
+                    behavior="padding" 
+                    style={styles.popupView}
+                >
                     {this.renderOutsideTouchable(onTouchOutside)}
                     <View style={styles.popupViewBlock}>
                         {this.renderTitle()}
                         {this.renderContent()}
                     </View>
-                </View>
+                </KeyboardAvoidingView>
             </Modal>
         ) 
     }
@@ -118,7 +136,7 @@ const styles = StyleSheet.create( {
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         paddingHorizontal: 10,
-        maxHeight: deviceHight * 0.4,
+        maxHeight: deviceHight * 0.5,
     },
     popupViewBlockTitle: {
         ...FONTS.p1,
@@ -131,7 +149,7 @@ const styles = StyleSheet.create( {
     popupInput: {
         width: '100%',
         padding: SIZES.padding - 10,
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.gray,
         marginBottom: SIZES.padding,
     },
 });

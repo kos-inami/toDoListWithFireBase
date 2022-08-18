@@ -98,8 +98,8 @@ export default function App() {
       .catch((error) => {
         console.log(error)
         Alert.alert(
-          "The account cannot found.",
-          "Please try again",
+          "Email or password are wrong.",
+          "Please try again!",
           [
             { text: "OK", onPress: () => console.log("OK Pressed") }
           ])
